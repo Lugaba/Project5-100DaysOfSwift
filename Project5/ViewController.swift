@@ -14,6 +14,10 @@ class ViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
+        title = UserDefaults.standard.string(forKey: "titlePalavra")
+        usedWords = UserDefaults.standard.stringArray(forKey: "usedWords") ?? [String]()
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(promptforAnswer))
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(startGame))
         
@@ -27,13 +31,17 @@ class ViewController: UITableViewController {
             allWords = ["silkworm"]
         }
         
-        startGame()
+        if title == nil {
+            startGame()
+        }
     }
     
     
     @objc func startGame() {
         title = allWords.randomElement()
+        UserDefaults.standard.set(title, forKey: "titlePalavra")
         usedWords.removeAll(keepingCapacity: true)
+        UserDefaults.standard.set(usedWords, forKey: "usedWords")
         tableView.reloadData()
     }
     
@@ -68,6 +76,7 @@ class ViewController: UITableViewController {
             if isOriginal(word: lowerAnswer) {
                 if isReal(word: lowerAnswer) {
                     usedWords.insert(answer.lowercased(), at: 0)
+                    UserDefaults.standard.set(usedWords, forKey: "usedWords")
                     
                     let indexPath = IndexPath(row: 0, section: 0)
                     tableView.insertRows(at: [indexPath], with: .automatic)
